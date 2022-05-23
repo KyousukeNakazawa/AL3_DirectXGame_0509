@@ -9,6 +9,7 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "DebugCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -58,6 +59,13 @@ class GameScene {
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
+
+	//デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
+
+	Vector3 start = { -15, 0, -25 };
+	Vector3 end = { 35, 0, 25 };
+	Vector4 color = { 255, 255, 255, 255 };
 
 	/// <summary>
 	/// ゲームシーン用
