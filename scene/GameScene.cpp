@@ -28,7 +28,7 @@ void GameScene::Initialize() {
 	//メルセンヌ・ツイスター
 	std::mt19937_64 engine(seed_gen());
 	//乱数範囲（回転角用）
-	std::uniform_real_distribution<float> rotDist(0.0f, Radian(180));
+	std::uniform_real_distribution<float> rotDist(0.0f, Radian(360));
 	//乱数範囲（座標用）
 	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
 
@@ -132,13 +132,16 @@ void GameScene::Initialize() {
 	viewProjection_.eye = { 0, 0, -50 };
 
 	////カメラ注視点座標を設定
-	viewProjection_.target = { 0, 0, 0 };
+	viewProjection_.target = { 10, 0, 0 };
 
-	//ニアクリップ距離を設定
-	viewProjection_.nearZ = 52.0f;
+	//カメラ上方向ベクトルを設定（右上45度指定）
+	viewProjection_.up = { cosf(Radian(180) / 4.0f), sinf(Radian(180) / 4.0f), 0.0f };
 
-	//ファークリップ距離を設定
-	viewProjection_.farZ = 51.0f;
+	////ニアクリップ距離を設定
+	//viewProjection_.nearZ = 52.0f;
+
+	////ファークリップ距離を設定
+	//viewProjection_.farZ = 51.0f;
 }
 
 void GameScene::Update() {
@@ -172,23 +175,73 @@ void GameScene::Update() {
 		debugText_->Printf("eye:(%f, %f, %f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
 	}
 
-	//クリップ距離変更処理
+	//注視点移動処理
 	{
-		//上下キーでニアクリップ距離を増減
-		if (input_->PushKey(DIK_UP)) {
-			viewProjection_.nearZ += 0.1f;
+		//注視点の移動ベクトル
+		Vector3 move = { 0, 0, 0 };
+
+		//注視点の移動速さ
+		const float kTargetSpeed = 0.2f;
+
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_LEFT)) {
+			move = { -kTargetSpeed, 0, 0 };
 		}
-		else if (input_->PushKey(DIK_DOWN)) {
-			viewProjection_.nearZ -= 0.1f;
+		else if (input_->PushKey(DIK_RIGHT)) {
+			move = { kTargetSpeed, 0, 0 };
 		}
+
+		//注視点移動（ベクトルの加算）
+		viewProjection_.target += move;
 
 		//行列の再計算
 		viewProjection_.UpdateMatrix();
 
-		//デバック用表示
-		debugText_->SetPos(50, 130);
-		debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
+		//デバック表示用
+		debugText_->SetPos(50, 70);
+		debugText_->Printf("targe:(%f, %f, %f)", viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
 	}
+
+	//上方向回転処理
+	{
+		//上方向の回転速さ[ラジアン/frame]
+		const float kUpRotSpeed = 0.05f;
+
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_SPACE)) {
+			viewAngle += kUpRotSpeed;
+			//2πを超えたら0に戻す
+			viewAngle = fmodf(viewAngle, Radian(360));
+		}
+
+		//上方向ベクトルを計算（半径1の円周上の座標）
+		viewProjection_.up = { cosf(viewAngle), sinf(viewAngle), 0.0f };
+
+		//行列の再計算
+		viewProjection_.UpdateMatrix();
+
+		//デバック表示用
+		debugText_->SetPos(50, 90);
+		debugText_->Printf("up:(%f, %f, %f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+	}
+
+	////クリップ距離変更処理
+	//{
+	//	//上下キーでニアクリップ距離を増減
+	//	if (input_->PushKey(DIK_UP)) {
+	//		viewProjection_.nearZ += 0.1f;
+	//	}
+	//	else if (input_->PushKey(DIK_DOWN)) {
+	//		viewProjection_.nearZ -= 0.1f;
+	//	}
+
+	//	//行列の再計算
+	//	viewProjection_.UpdateMatrix();
+
+	//	//デバック用表示
+	//	debugText_->SetPos(50, 130);
+	//	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
+	//}
 }
 
 void GameScene::Draw() {
