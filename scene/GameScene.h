@@ -68,6 +68,8 @@ private: // メンバ変数
 	Vector3 end = { 35, 0, 25 };
 	Vector4 color = { 255, 255, 255, 255 };
 
+	float viewAngle = 0.0f;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
