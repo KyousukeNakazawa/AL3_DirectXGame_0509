@@ -9,6 +9,10 @@ float Radian(float n) {
 	return n * 3.14 / 180;
 }
 
+float Degrees(float n) {
+	return 180 / 3.14 * n;
+}
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -246,7 +250,7 @@ void GameScene::Update() {
 
 		//デバック用表示
 		debugText_->SetPos(50, 110);
-		debugText_->Printf("fovAngleY(Degree):%f", viewProjection_.fovAngleY);
+		debugText_->Printf("fovAngleY(Degree):%f", Degrees(viewProjection_.fovAngleY));
 	}
 
 	//クリップ距離変更処理
