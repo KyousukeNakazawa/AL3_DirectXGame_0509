@@ -33,15 +33,16 @@ Matrix4 Matrix4Identity();
 Matrix4 Matrix4Transpose(const Matrix4& m);
 
 // 拡大縮小行列の作成
-Matrix4 Matrix4Scaling(float sx, float sy, float sz);
+Matrix4 Matrix4Scaling(Vector3 scale);
 
 // 回転行列の作成
+Matrix4 Matrix4Rotation(Vector3 rotation);
 Matrix4 Matrix4RotationX(float angle);
 Matrix4 Matrix4RotationY(float angle);
 Matrix4 Matrix4RotationZ(float angle);
 
 // 平行移動行列の作成
-Matrix4 Matrix4Translation(float tx, float ty, float tz);
+Matrix4 Matrix4Translation(Vector3 translation);
 
 // ビュー行列の作成
 Matrix4 Matrix4LookAtLH(const Vector3& eye, const Vector3& target, const Vector3& up);
