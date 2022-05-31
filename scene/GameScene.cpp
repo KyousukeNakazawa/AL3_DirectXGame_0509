@@ -6,11 +6,11 @@
 #include <random>
 
 float Radian(float n) {
-	return n * 3.14 / 180;
+	return n * 3.14f / 180;
 }
 
 float Degrees(float n) {
-	return 180 / 3.14 * n;
+	return 180 / 3.14f * n;
 }
 
 GameScene::GameScene() {}
@@ -42,88 +42,17 @@ void GameScene::Initialize() {
 	// 3Dモデルの生成
 	model_ = Model::Create();
 
-	//for (WorldTransform& worldTransform_ : worldTransform_) {
-	//	//ワールドトランスフォームの初期化
-	//	worldTransform_.Initialize();
-	//	// x,y,zのスケーリング設定
-	//	worldTransform_.scale_ = { 1.0f, 1.0f, 1.0f };
-
-	//	//Matrix4 matScale;
-
-	////matScale.m[0][0] = worldTransform_.scale_.x;
-	////matScale.m[1][1] = worldTransform_.scale_.x;
-	////matScale.m[2][2] = worldTransform_.scale_.y;
-	////matScale.m[3][3] = 1;
-
-	////worldTransform_.matWorld_ *= matScale;
-
-	////worldTransform_.TransferMatrix();
-
-	//	// x,y,zの軸周りの回転角を設定
-	//	worldTransform_.rotation_ = { rotDist(engine), rotDist(engine)  ,rotDist(engine) };
-
-	//	//合成用回転行列を宣言
-	//	Matrix4 matRot;
-
-	//	//各軸用回転行列を宣言
-	//	Matrix4 matRotX, matRotY, matRotZ;
-
-	//	matRotZ.m[0][0] = cos(worldTransform_.rotation_.z);
-	//	matRotZ.m[0][1] = sin(worldTransform_.rotation_.z);
-	//	matRotZ.m[1][0] = -sin(worldTransform_.rotation_.z);
-	//	matRotZ.m[1][1] = cos(worldTransform_.rotation_.z);
-	//	matRotZ.m[2][2] = 1;
-	//	matRotZ.m[3][3] = 1;
-
-	//	matRotX.m[0][0] = 1;
-	//	matRotX.m[1][1] = cos(worldTransform_.rotation_.x);
-	//	matRotX.m[1][2] = sin(worldTransform_.rotation_.x);
-	//	matRotX.m[2][1] = -sin(worldTransform_.rotation_.x);
-	//	matRotX.m[2][2] = cos(worldTransform_.rotation_.x);
-	//	matRotX.m[3][3] = 1;
-
-	//	matRotY.m[0][0] = cos(worldTransform_.rotation_.y);
-	//	matRotY.m[0][2] = -sin(worldTransform_.rotation_.y);
-	//	matRotY.m[1][1] = 1;
-	//	matRotY.m[2][0] = sin(worldTransform_.rotation_.y);
-	//	matRotY.m[2][2] = cos(worldTransform_.rotation_.y);
-	//	matRotY.m[3][3] = 1;
-
-	//	//各軸の回転行列を合成
-	//	//matRot = matRotZ * matRotX * matRotY;
-
-	//	//worldTransform_.matWorld_ = matRotZ;
-	//	worldTransform_.matWorld_ *= matRotZ;
-	//	worldTransform_.matWorld_ *= matRotX;
-	//	worldTransform_.matWorld_ *= matRotY;
-
-	//	worldTransform_.TransferMatrix();
-
-	//	// x,y,z軸周りの平行移動を設定
-	//	worldTransform_.translation_ = { posDist(engine), posDist(engine), posDist(engine) };
-
-	//	Matrix4 matTrans = MathUtility::Matrix4Identity();
-
-	//	matTrans.m[0][0] = 1;
-	//	matTrans.m[1][1] = 1;
-	//	matTrans.m[2][2] = 1;
-	//	matTrans.m[3][3] = 1;
-	//	matTrans.m[3][0] = worldTransform_.translation_.x;
-	//	matTrans.m[3][1] = worldTransform_.translation_.y;
-	//	matTrans.m[3][2] = worldTransform_.translation_.z;
-
-	//	worldTransform_.matWorld_ *= matTrans;
-
-	//	worldTransform_.TransferMatrix();
-	//}
+	for (int i = 0; i < 100; i++) {
+		worldTransform_[i].Initialize();
+	}
 
 	//キャラクターの大元
-	worldTransform_[PartId::kRoot].translation_ = { 0, 0, 0 };
-	worldTransform_[PartId::kRoot].rotation_ = { 0, 0.5f, 0 };
+	worldTransform_[PartId::kRoot].translation_ = { 0, 3.0f, 0 };
+	worldTransform_[PartId::kRoot].rotation_ = { 0, 0.5f, 0};
 	worldTransform_[PartId::kRoot].Initialize();
 
 	//脊椎
-	worldTransform_[PartId::kSpine].translation_ = { 0, 3.0f, 0 };
+	worldTransform_[PartId::kSpine].translation_ = { 0, 0, 0 };
 	worldTransform_[PartId::kSpine].parent_ = &worldTransform_[PartId::kRoot];
 	worldTransform_[PartId::kSpine].Initialize();
 
@@ -141,7 +70,7 @@ void GameScene::Initialize() {
 	worldTransform_[PartId::kArmR].parent_ = &worldTransform_[PartId::kChest];
 
 	//下半身
-	worldTransform_[PartId::kHip].translation_ = { 0, 0, 0 };
+	worldTransform_[PartId::kHip].translation_ = { 0, -3.0f, 0 };
 	worldTransform_[PartId::kHip].parent_ = &worldTransform_[PartId::kSpine];
 
 	worldTransform_[PartId::kLegL].translation_ = { 3.0f, -3.0f, 0 };
@@ -188,9 +117,89 @@ void GameScene::Update() {
 	//デバッグカメラの更新
 	debugCamera_->Update();
 
+
+
 	//大元から順に更新
 	for (int i = 0; i < kNumpartId; i++) {
-		worldTransform_[i]
+		worldTransform_[i].UpdateMatrix();
+	}
+
+	//キャラクター移動処理
+	{
+		//キャラクター移動ベクトル
+		Vector3 move = { 0, 0, 0 };
+
+		//キャラクターの移動速度
+		const float kCharacterSpeed = 0.2f;
+
+		//押した方向で移動ベクトル変更
+		if (input_->PushKey(DIK_LEFT)) {
+			move.x -= kCharacterSpeed;
+		}
+		else if (input_->PushKey(DIK_RIGHT)) {
+			move.x += kCharacterSpeed;
+		}
+
+		//注視点移動
+		worldTransform_[PartId::kRoot].translation_ += move;
+
+		//デバック用表示
+		debugText_->SetPos(50, 150);
+		debugText_->Printf(
+			"Root:(%f, %f, %f)", worldTransform_[PartId::kRoot].translation_.x,
+			worldTransform_[PartId::kRoot].translation_.y,
+			worldTransform_[PartId::kRoot].translation_.z);
+	}
+
+	//上半身回転処理
+	{
+		const float kChestRotSpeed = 0.05f;
+
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_U)) {
+			worldTransform_[PartId::kChest].rotation_.y -= kChestRotSpeed;
+		}
+		else if (input_->PushKey(DIK_I)) {
+			worldTransform_[PartId::kChest].rotation_.y += kChestRotSpeed;
+		}
+	}
+
+	//下半身回転処理
+	{
+		const float kHipRotSpeed = 0.05f;
+
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_J)) {
+			worldTransform_[PartId::kHip].rotation_.y -= kHipRotSpeed;
+		}
+		else if (input_->PushKey(DIK_K)) {
+			worldTransform_[PartId::kHip].rotation_.y += kHipRotSpeed;
+		}
+	}
+
+	//身体回転処理
+	{
+		const float kRootRotSpeed = 0.05f;
+
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_A)) {
+			worldTransform_[PartId::kRoot].rotation_.y -= kRootRotSpeed;
+		}
+		else if (input_->PushKey(DIK_D)) {
+			worldTransform_[PartId::kRoot].rotation_.y += kRootRotSpeed;
+		}
+	}
+
+	//腕足回転処理
+	{
+		const float kRotSpeed = 0.1f;
+
+		//左腕右足
+		worldTransform_[PartId::kArmL].rotation_.x += kRotSpeed;
+		worldTransform_[PartId::kLegR].rotation_.x += kRotSpeed;
+
+		worldTransform_[PartId::kArmR].rotation_.x -= kRotSpeed;
+		worldTransform_[PartId::kLegL].rotation_.x -= kRotSpeed;
 	}
 }
 
@@ -222,8 +231,9 @@ void GameScene::Draw() {
 	/// </summary>
 
 	//3Dモデル描画
-	for (WorldTransform& worldTransform_ : worldTransform_) {
-		model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+	for (int i = 0; i < kNumpartId; i++) {
+		if (i <= 1) continue;
+		model_->Draw(worldTransform_[i], viewProjection_, textureHandle_);
 	}
 
 	//PrimitiveDrawer::GetInstance()->DrawLine3d(start, end, color);
