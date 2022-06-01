@@ -15,10 +15,9 @@ void WorldTransform::UpdateMatrix() {
 	matWorld_ *= matRot;
 	matWorld_ *= matTrans;
 
-	//worldTransform_[i].TransferMatrix();
-
 	if (parent_) {
 		matWorld_ *= parent_->matWorld_;
-		TransferMatrix();
 	}
+
+	TransferMatrix();
 }

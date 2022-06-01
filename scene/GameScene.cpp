@@ -18,6 +18,7 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
+	delete player_;
 }
 
 void GameScene::Initialize() {
@@ -41,43 +42,6 @@ void GameScene::Initialize() {
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
-
-	for (int i = 0; i < 100; i++) {
-		worldTransform_[i].Initialize();
-	}
-
-	//キャラクターの大元
-	worldTransform_[PartId::kRoot].translation_ = { 0, 3.0f, 0 };
-	worldTransform_[PartId::kRoot].rotation_ = { 0, 0.5f, 0};
-	worldTransform_[PartId::kRoot].Initialize();
-
-	//脊椎
-	worldTransform_[PartId::kSpine].translation_ = { 0, 0, 0 };
-	worldTransform_[PartId::kSpine].parent_ = &worldTransform_[PartId::kRoot];
-	worldTransform_[PartId::kSpine].Initialize();
-
-	//上半身
-	worldTransform_[PartId::kChest].translation_ = worldTransform_[PartId::kSpine].translation_;
-	worldTransform_[PartId::kChest].parent_ = &worldTransform_[PartId::kSpine];
-
-	worldTransform_[PartId::kHead].translation_ = { 0, 3.0f, 0 };
-	worldTransform_[PartId::kHead].parent_ = &worldTransform_[PartId::kChest];
-
-	worldTransform_[PartId::kArmL].translation_ = { 3.0f, 0, 0 };
-	worldTransform_[PartId::kArmL].parent_ = &worldTransform_[PartId::kChest];
-
-	worldTransform_[PartId::kArmR].translation_ = { -3.0f, 0, 0 };
-	worldTransform_[PartId::kArmR].parent_ = &worldTransform_[PartId::kChest];
-
-	//下半身
-	worldTransform_[PartId::kHip].translation_ = { 0, -3.0f, 0 };
-	worldTransform_[PartId::kHip].parent_ = &worldTransform_[PartId::kSpine];
-
-	worldTransform_[PartId::kLegL].translation_ = { 3.0f, -3.0f, 0 };
-	worldTransform_[PartId::kLegL].parent_ = &worldTransform_[PartId::kHip];
-
-	worldTransform_[PartId::kLegR].translation_ = { -3.0f, -3.0f, 0 };
-	worldTransform_[PartId::kLegR].parent_ = &worldTransform_[PartId::kHip];
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -111,96 +75,19 @@ void GameScene::Initialize() {
 
 	//ファークリップ距離を設定
 	viewProjection_.farZ = 51.0f;
+
+	//自キャラの生成
+	player_ = new Player();
+	//初期化
+	player_->Initialize(model_, textureHandle_);
 }
 
 void GameScene::Update() {
 	//デバッグカメラの更新
 	debugCamera_->Update();
 
-
-
-	//大元から順に更新
-	for (int i = 0; i < kNumpartId; i++) {
-		worldTransform_[i].UpdateMatrix();
-	}
-
-	//キャラクター移動処理
-	{
-		//キャラクター移動ベクトル
-		Vector3 move = { 0, 0, 0 };
-
-		//キャラクターの移動速度
-		const float kCharacterSpeed = 0.2f;
-
-		//押した方向で移動ベクトル変更
-		if (input_->PushKey(DIK_LEFT)) {
-			move.x -= kCharacterSpeed;
-		}
-		else if (input_->PushKey(DIK_RIGHT)) {
-			move.x += kCharacterSpeed;
-		}
-
-		//注視点移動
-		worldTransform_[PartId::kRoot].translation_ += move;
-
-		//デバック用表示
-		debugText_->SetPos(50, 150);
-		debugText_->Printf(
-			"Root:(%f, %f, %f)", worldTransform_[PartId::kRoot].translation_.x,
-			worldTransform_[PartId::kRoot].translation_.y,
-			worldTransform_[PartId::kRoot].translation_.z);
-	}
-
-	//上半身回転処理
-	{
-		const float kChestRotSpeed = 0.05f;
-
-		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_U)) {
-			worldTransform_[PartId::kChest].rotation_.y -= kChestRotSpeed;
-		}
-		else if (input_->PushKey(DIK_I)) {
-			worldTransform_[PartId::kChest].rotation_.y += kChestRotSpeed;
-		}
-	}
-
-	//下半身回転処理
-	{
-		const float kHipRotSpeed = 0.05f;
-
-		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_J)) {
-			worldTransform_[PartId::kHip].rotation_.y -= kHipRotSpeed;
-		}
-		else if (input_->PushKey(DIK_K)) {
-			worldTransform_[PartId::kHip].rotation_.y += kHipRotSpeed;
-		}
-	}
-
-	//身体回転処理
-	{
-		const float kRootRotSpeed = 0.05f;
-
-		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_A)) {
-			worldTransform_[PartId::kRoot].rotation_.y -= kRootRotSpeed;
-		}
-		else if (input_->PushKey(DIK_D)) {
-			worldTransform_[PartId::kRoot].rotation_.y += kRootRotSpeed;
-		}
-	}
-
-	//腕足回転処理
-	{
-		const float kRotSpeed = 0.1f;
-
-		//左腕右足
-		worldTransform_[PartId::kArmL].rotation_.x += kRotSpeed;
-		worldTransform_[PartId::kLegR].rotation_.x += kRotSpeed;
-
-		worldTransform_[PartId::kArmR].rotation_.x -= kRotSpeed;
-		worldTransform_[PartId::kLegL].rotation_.x -= kRotSpeed;
-	}
+	//自キャラの更新
+	player_->Update();
 }
 
 void GameScene::Draw() {
@@ -231,10 +118,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	//3Dモデル描画
-	for (int i = 0; i < kNumpartId; i++) {
-		if (i <= 1) continue;
-		model_->Draw(worldTransform_[i], viewProjection_, textureHandle_);
-	}
+	player_->Draw(viewProjection_);
 
 	//PrimitiveDrawer::GetInstance()->DrawLine3d(start, end, color);
 

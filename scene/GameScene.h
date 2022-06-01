@@ -11,6 +11,8 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include <DirectXMath.h>
+#include"Player.h"
+
 
 /// <summary>
 /// ゲームシーン
@@ -70,9 +72,6 @@ private: // メンバ変数
 	// 3Dモデル
 	Model* model_ = nullptr;
 
-	//ワールドトランスフォーム
-	WorldTransform worldTransform_[100];
-
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
@@ -84,6 +83,9 @@ private: // メンバ変数
 	Vector4 color = { 255, 255, 255, 255 };
 
 	float viewAngle = 0.0f;
+
+	//自キャラ
+	Player* player_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
