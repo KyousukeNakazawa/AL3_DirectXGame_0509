@@ -19,6 +19,7 @@ Matrix4 MathUtility::Matrix4Scaling(Vector3 scale) {
 	matScale.m[0][0] = scale.x;
 	matScale.m[1][1] = scale.y;
 	matScale.m[2][2] = scale.z;
+	matScale.m[3][3] = 1;
 
 	return matScale;
 }

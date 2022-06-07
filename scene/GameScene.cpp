@@ -5,13 +5,7 @@
 #include <cassert>
 #include <random>
 
-float Radian(float n) {
-	return n * 3.14f / 180;
-}
 
-float Degrees(float n) {
-	return 180 / 3.14f * n;
-}
 
 GameScene::GameScene() {}
 

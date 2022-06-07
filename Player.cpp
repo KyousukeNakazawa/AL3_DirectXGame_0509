@@ -1,5 +1,13 @@
 #include "Player.h"
 
+float Radian(float n) {
+	return n * 3.14f / 180;
+}
+
+float Degrees(float n) {
+	return 180 / 3.14f * n;
+}
+
 void Player::Initialize(Model* model, uint32_t textureHandle) {
 	//NULLポインタチェック
 	assert(model);
@@ -29,10 +37,21 @@ void Player::Update() {
 	worldTransform_.UpdateMatrix();
 
 	//移動処理
-	Player::Move();
+	Move();
 	//移動限界
 	const float kMoveLimitX = 35;
 	const float kMoveLimitY = 19;
+
+	//旋回処理
+	Rotate();
+
+	//攻撃処理
+	Attack();
+
+	//弾更新
+	if (bullet_) {
+		bullet_->Update();
+	}
 
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
@@ -43,6 +62,11 @@ void Player::Update() {
 void Player::Draw(ViewProjection viewProjection_) {
 	//3Dモデル描画
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+
+	//弾描画
+	if (bullet_) {
+		bullet_->Draw(viewProjection_);
+	}
 }
 
 void Player::Move() {
@@ -69,9 +93,39 @@ void Player::Move() {
 	worldTransform_.translation_ += move;
 
 	//デバック用表示
-	debugText_->SetPos(50, 150);
+	debugText_->SetPos(50, 100);
 	debugText_->Printf(
-		"Root:(%f, %f, %f)", worldTransform_.translation_.x,
+		"Pos:(%f, %f, %f)", worldTransform_.translation_.x,
 		worldTransform_.translation_.y,
 		worldTransform_.translation_.z);
+}
+
+void Player::Rotate() {
+	Vector3 root = { 0, 0, 0 };
+
+	//キャラクターの旋回速度
+	const float kCharacterRoot = Radian(1.0f);
+
+	if (input_->PushKey(DIK_A)) {
+		worldTransform_.rotation_.y += kCharacterRoot;
+	}
+	if (input_->PushKey(DIK_D)) {
+		worldTransform_.rotation_.y -= kCharacterRoot;
+	}
+
+	//デバック用表示
+	debugText_->SetPos(50, 125);
+	debugText_->Printf(
+		"Rot:(%f)", worldTransform_.rotation_.y);
+}
+
+void Player::Attack() {
+	if (input_->PushKey(DIK_SPACE)) {
+		//弾を生成し、初期化
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		//弾を登録する
+		bullet_ = newBullet;
+	}
 }

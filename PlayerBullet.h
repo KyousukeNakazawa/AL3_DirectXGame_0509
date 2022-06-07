@@ -10,21 +10,14 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include <DirectXMath.h>
-#include "PlayerBullet.h"
 
-float Radian(float n);
-float Degrees(float n);
-
-/// <summary>
-/// 自キャラ
-/// </summary>
-class Player
+class PlayerBullet
 {
 public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, const Vector3& position);
 
 	/// <summary>
 	/// 更新
@@ -37,9 +30,7 @@ public:
 	void Draw(ViewProjection viewProjection_);
 
 private:
-	//変数
-	Input* input_ = nullptr;
-	DebugText* debugText_ = nullptr;
+	//メンバ変数
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//モデル
@@ -47,16 +38,5 @@ private:
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 
-	//弾
-	PlayerBullet* bullet_ = nullptr;
-
-	//関数
-	//移動
-	void Move();
-
-	//旋回
-	void Rotate();
-
-	void Attack();
 };
 
