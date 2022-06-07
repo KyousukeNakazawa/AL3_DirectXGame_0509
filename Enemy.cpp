@@ -20,13 +20,21 @@ void Enemy::Initialize(Model* model) {
 	worldTransform_.rotation_ = { 0, 0, 0 };
 
 	//À•W
-	worldTransform_.translation_ = { 5, 0, 0 };
+	worldTransform_.translation_ = { 0, 5, 50 };
 }
 
 void Enemy::Update() {
 	worldTransform_.UpdateMatrix();
+
+	Move();
 }
 
 void Enemy::Draw(ViewProjection viewProjection_) {
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+}
+
+void Enemy::Move() {
+	const float kEnemySpeed = 0.2f;
+
+	worldTransform_.translation_.z -= kEnemySpeed;
 }

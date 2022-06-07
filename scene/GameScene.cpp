@@ -70,8 +70,13 @@ void GameScene::Initialize() {
 	viewProjection_.farZ = 51.0f;
 
 	//初期化
-	player_->Initialize(model_, textureHandle_);
-	//enemy_->Initialize(model_);
+	Player* newPlayer = new Player();
+	newPlayer->Initialize(model_, textureHandle_);
+	player_.reset(newPlayer);
+
+	Enemy* newEnemy = new Enemy();
+	newEnemy->Initialize(model_);
+	enemy_.reset(newEnemy);
 }
 
 void GameScene::Update() {
@@ -82,9 +87,9 @@ void GameScene::Update() {
 	player_->Update();
 
 	//敵キャラ更新
-	/*if (enemy_) {
+	if (enemy_) {
 		enemy_->Update();
-	}*/
+	}
 }
 
 void GameScene::Draw() {
@@ -115,9 +120,9 @@ void GameScene::Draw() {
 	/// </summary>
 
 	//3Dモデル描画
-	/*if (enemy_) {
+	if (enemy_) {
 		enemy_->Draw(viewProjection_);
-	}*/
+	}
 
 	player_->Draw(viewProjection_);
 

@@ -88,10 +88,10 @@ private: // メンバ変数
 	float viewAngle = 0.0f;
 
 	//自キャラ
-	Player* player_ = nullptr;
+	std::unique_ptr<Player> player_;
 
 	//敵キャラ
-	//Enemy* enemy_ = nullptr;
+	std::unique_ptr<Enemy> enemy_;
 
 	/// <summary>
 	/// ゲームシーン用
