@@ -13,6 +13,13 @@
 
 class Enemy
 {
+
+	//行動フェーズ
+	enum class Phase {
+		Approach,	//接近する
+		Leave,		//離脱する
+	};
+
 public:
 	/// <summary>
 	/// 初期化
@@ -40,8 +47,19 @@ private:
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 
+	//フェーズ
+	Phase phase_ = Phase::Approach;
+
+
+
 	//関数
 	//移動
 	void Move();
+
+	//接近
+	void Approach();
+
+	//離脱
+	void Leave();
 };
 

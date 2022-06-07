@@ -36,5 +36,26 @@ void Enemy::Draw(ViewProjection viewProjection_) {
 void Enemy::Move() {
 	const float kEnemySpeed = 0.2f;
 
-	worldTransform_.translation_.z -= kEnemySpeed;
+	switch (phase_) {
+	case Phase::Approach:
+	default:
+		Approach();
+		break;
+	case Phase::Leave:
+		Leave();
+		break;
+	}
+}
+
+void Enemy::Approach() {
+	worldTransform_.translation_.z -= 0.2f;
+	//“Á’è‚ÌˆÊ’u‚Å—£’E
+	if (worldTransform_.translation_.z < 0.0f) {
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::Leave() {
+	worldTransform_.translation_.x -= 0.1f;
+	worldTransform_.translation_.y += 0.1f;
 }
