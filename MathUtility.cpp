@@ -64,3 +64,12 @@ Matrix4 MathUtility::Matrix4Translation(Vector3 translation) {
 
 	return matTrans;
 }
+
+Vector3 Vector3TransformNormal(const Vector3& v, const Matrix4& m) {
+	Vector3 vec;
+	vec.x = v.x * m.m[0][0] + v.y * m.m[0][1] + v.z * m.m[0][2];
+	vec.y = v.x * m.m[1][0] + v.y * m.m[1][1] + v.z * m.m[1][2];
+	vec.z = v.x * m.m[2][0] + v.y * m.m[2][1] + v.z * m.m[2][2];
+
+	return vec;
+}

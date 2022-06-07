@@ -22,7 +22,7 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.Initialize();
 
 	//スケーリング
-	worldTransform_.scale_ = { 1, 1, 1};
+	worldTransform_.scale_ = { 1, 1, 1 };
 
 	//角度
 	worldTransform_.rotation_ = { 0, 0, 0 };
@@ -34,6 +34,10 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 }
 
 void Player::Update() {
+	//弾の削除
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead(); });
+
 	worldTransform_.UpdateMatrix();
 
 	//移動処理
@@ -53,6 +57,7 @@ void Player::Update() {
 		bullet->Update();
 	}
 
+	//移動範囲を制限
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
@@ -121,9 +126,17 @@ void Player::Rotate() {
 
 void Player::Attack() {
 	if (input_->TriggerKey(DIK_SPACE)) {
+		//弾の速度
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+
+		//速度ベクトルを自機の向きに合わせる
+		velocity = MathUtility::Vector3TransformNormal(velocity, worldTransform_.matWorld_);
+
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_, worldTransform_.rotation_);
+		newBullet->Initialize(model_, worldTransform_.translation_,
+			velocity);
 
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));

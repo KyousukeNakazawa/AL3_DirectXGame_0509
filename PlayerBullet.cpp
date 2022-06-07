@@ -1,6 +1,7 @@
 #include "PlayerBullet.h"
 
-void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vector3& rotation) {
+void PlayerBullet::Initialize(Model* model, const Vector3& position,
+	const Vector3& velocity) {
 	//NULLポインタチェック
 	assert(model);
 
@@ -12,12 +13,20 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	
 	//引数で受け取った数値をセット
 	worldTransform_.translation_ = position;
-	worldTransform_.rotation_ = rotation;
+	//worldTransform_.rotation_ = rotation;
+	velocity_ = velocity;
 
 }
 
 void PlayerBullet::Update() {
 	worldTransform_.UpdateMatrix();
+
+	//座標を移動させる
+	worldTransform_.translation_ += velocity_;
+
+	if (--deathTimer_ <= 0) {
+		isDead_ = true;
+	}
 }
 
 void PlayerBullet::Draw(ViewProjection viewProjection_) {
