@@ -12,7 +12,6 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
-	delete player_;
 }
 
 void GameScene::Initialize() {
@@ -70,10 +69,9 @@ void GameScene::Initialize() {
 	//ファークリップ距離を設定
 	viewProjection_.farZ = 51.0f;
 
-	//自キャラの生成
-	player_ = new Player();
 	//初期化
 	player_->Initialize(model_, textureHandle_);
+	//enemy_->Initialize(model_);
 }
 
 void GameScene::Update() {
@@ -82,6 +80,11 @@ void GameScene::Update() {
 
 	//自キャラの更新
 	player_->Update();
+
+	//敵キャラ更新
+	/*if (enemy_) {
+		enemy_->Update();
+	}*/
 }
 
 void GameScene::Draw() {
@@ -112,6 +115,10 @@ void GameScene::Draw() {
 	/// </summary>
 
 	//3Dモデル描画
+	/*if (enemy_) {
+		enemy_->Draw(viewProjection_);
+	}*/
+
 	player_->Draw(viewProjection_);
 
 	//PrimitiveDrawer::GetInstance()->DrawLine3d(start, end, color);

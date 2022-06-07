@@ -12,6 +12,9 @@
 #include "DebugCamera.h"
 #include <DirectXMath.h>
 #include"Player.h"
+#include "Enemy.h"
+#include <memory>
+#include <list>
 
 
 /// <summary>
@@ -86,6 +89,9 @@ private: // メンバ変数
 
 	//自キャラ
 	Player* player_ = nullptr;
+
+	//敵キャラ
+	//Enemy* enemy_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
