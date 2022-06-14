@@ -10,6 +10,9 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include <DirectXMath.h>
+#include "EnemyBullet.h"
+#include <memory>
+#include <list>
 
 class Enemy
 {
@@ -50,7 +53,14 @@ private:
 	//フェーズ
 	Phase phase_ = Phase::Approach;
 
-
+	//弾
+	std::list<std::unique_ptr<EnemyBullet>> bullets_;
+	//スポーンタイム
+	static const int32_t kSpawnTime = 60 * 5;
+	//スポーンタイマー
+	int32_t spawnTimer_ = kSpawnTime;
+	//スポーンフラグ
+	bool isSpawn_ = true;
 
 	//関数
 	//移動
@@ -61,6 +71,9 @@ private:
 
 	//離脱
 	void Leave();
+
+	//射撃
+	void Fire();
 
 	//メンバ関数ポインタのテーブル
 	static void (Enemy::* spMoveTable[])();

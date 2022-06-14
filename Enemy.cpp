@@ -20,12 +20,25 @@ void Enemy::Initialize(Model* model) {
 	worldTransform_.rotation_ = { 0, 0, 0 };
 
 	//À•W
-	worldTransform_.translation_ = { 0, 5, 50 };
+	worldTransform_.translation_ = { 5, 5, 50 };
 }
 
 void Enemy::Update() {
+	//’e‚Ìíœ
+	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
+		return bullet->IsDead(); });
+
 	worldTransform_.UpdateMatrix();
 
+	//UŒ‚ˆ—
+	Fire();
+
+	//’eXV
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+		bullet->Update();
+	}
+
+	//ˆÚ“®ˆ—
 	(this->*spMoveTable[static_cast<size_t>(phase_)])();
 
 	//Move();
@@ -33,6 +46,11 @@ void Enemy::Update() {
 
 void Enemy::Draw(ViewProjection viewProjection_) {
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
+
+	//’e•`‰æ
+	for (std::unique_ptr<EnemyBullet>& bullet : bullets_) {
+		bullet->Draw(viewProjection_);
+	}
 }
 
 void Enemy::Move() {
@@ -62,7 +80,32 @@ void Enemy::Leave() {
 	worldTransform_.translation_.y += 0.1f;
 }
 
+void Enemy::Fire() {
+	if (isSpawn_) {
+		//’e‚Ì‘¬“x
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, -kBulletSpeed);
+
+		//‘¬“xƒxƒNƒgƒ‹‚ğ©‹@‚ÌŒü‚«‚É‡‚í‚¹‚é
+		velocity = MathUtility::Vector3TransformNormal(velocity, worldTransform_.matWorld_);
+
+		//’e‚ğ¶¬‚µA‰Šú‰»
+		std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
+		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+
+		//’e‚ğ“o˜^‚·‚é
+		bullets_.push_back(std::move(newBullet));
+		isSpawn_ = false;
+	}
+	else {
+		if (--spawnTimer_ < 0) {
+			isSpawn_ = true;
+			spawnTimer_ = kSpawnTime;
+		}
+	}
+}
+
 void (Enemy::* Enemy::spMoveTable[])() = {
 	&Enemy::Approach,
-	&Enemy::Leave 
+	&Enemy::Leave
 };
