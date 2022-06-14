@@ -5,7 +5,7 @@ void Enemy::Initialize(Model* model) {
 	assert(model);
 
 	model_ = model;
-	textureHandle_ = TextureManager::Load("kabotya.png");
+	textureHandle_ = TextureManager::Load("enemy.png");
 
 	//シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
@@ -26,7 +26,9 @@ void Enemy::Initialize(Model* model) {
 void Enemy::Update() {
 	worldTransform_.UpdateMatrix();
 
-	Move();
+	(this->*spMoveTable[static_cast<size_t>(phase_)])();
+
+	//Move();
 }
 
 void Enemy::Draw(ViewProjection viewProjection_) {
@@ -59,3 +61,8 @@ void Enemy::Leave() {
 	worldTransform_.translation_.x -= 0.1f;
 	worldTransform_.translation_.y += 0.1f;
 }
+
+void (Enemy::* Enemy::spMoveTable[])() = {
+	&Enemy::Approach,
+	&Enemy::Leave 
+};

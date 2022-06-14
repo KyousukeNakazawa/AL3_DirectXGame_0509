@@ -11,20 +11,14 @@
 #include "DebugCamera.h"
 #include <DirectXMath.h>
 
-class Enemy
+class EnemyBullet
 {
-
-	//行動フェーズ
-	enum class Phase {
-		Approach,	//接近する
-		Leave,		//離脱する
-	};
-
 public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model);
+	void Initialize(Model* model, const Vector3& position,
+		const Vector3& velocity);
 
 	/// <summary>
 	/// 更新
@@ -36,10 +30,10 @@ public:
 	/// </summary>
 	void Draw(ViewProjection viewProjection_);
 
+	bool IsDead() const { return isDead_; }
+
 private:
-	//変数
-	Input* input_ = nullptr;
-	DebugText* debugText_ = nullptr;
+	//メンバ変数
 	//ワールド変換データ
 	WorldTransform worldTransform_;
 	//モデル
@@ -47,22 +41,16 @@ private:
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 
-	//フェーズ
-	Phase phase_ = Phase::Approach;
+	//速度
+	Vector3 velocity_;
 
+	//消滅時間
+	static const int32_t kLifeTime = 60 * 5;
+	//デスタイマー
+	int32_t deathTimer_ = kLifeTime;
+	//デスフラグ
+	bool isDead_ = false;
 
-
-	//関数
-	//移動
-	void Move();
-
-	//接近
-	void Approach();
-
-	//離脱
-	void Leave();
-
-	//メンバ関数ポインタのテーブル
-	static void (Enemy::* spMoveTable[])();
+	//メンバ関数
 };
 
