@@ -14,6 +14,18 @@ class Vector3 {
 	// コンストラクタ
 	Vector3();                          // 零ベクトルとする
 	Vector3(float x, float y, float z); // x成分, y成分, z成分 を指定しての生成
+
+	float Length()const {
+		return sqrt(x * x + y * y + z * z);
+	}
+
+	Vector3& Normalize() {
+		float len = Length();
+		if (len != 0) {
+			return *this /= len;
+		}
+		return *this;
+	}
 	  
 	// 単項演算子オーバーロード
 	Vector3 operator+() const;

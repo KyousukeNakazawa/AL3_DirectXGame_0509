@@ -11,8 +11,13 @@
 #include "DebugCamera.h"
 #include <DirectXMath.h>
 #include "EnemyBullet.h"
+#include "TimedCall.h"
 #include <memory>
 #include <list>
+
+
+//自機クラスの前方宣言
+class Player;
 
 class Enemy
 {
@@ -39,6 +44,10 @@ public:
 	/// </summary>
 	void Draw(ViewProjection viewProjection_);
 
+	Vector3 GetWorldPos();
+
+	void SetPlayer(Player* player) { player_ = player; }
+
 private:
 	//変数
 	Input* input_ = nullptr;
@@ -56,11 +65,14 @@ private:
 	//弾
 	std::list<std::unique_ptr<EnemyBullet>> bullets_;
 	//スポーンタイム
-	static const int32_t kSpawnTime = 60 * 5;
+	static const int32_t kSpawnTime = 60 * 2;
 	//スポーンタイマー
 	int32_t spawnTimer_ = kSpawnTime;
 	//スポーンフラグ
 	bool isSpawn_ = true;
+
+	//自キャラ
+	Player* player_ = nullptr;
 
 	//関数
 	//移動

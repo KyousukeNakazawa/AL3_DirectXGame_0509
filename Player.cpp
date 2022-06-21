@@ -74,6 +74,16 @@ void Player::Draw(ViewProjection viewProjection_) {
 	}
 }
 
+Vector3 Player::GetWorldPos() {
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}
+
 void Player::Move() {
 	Vector3 move = { 0, 0, 0 };
 
@@ -135,7 +145,7 @@ void Player::Attack() {
 
 		//íeÇê∂ê¨ÇµÅAèâä˙âª
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
+		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
 		//íeÇìoò^Ç∑ÇÈ
 		bullets_.push_back(std::move(newBullet));

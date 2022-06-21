@@ -38,6 +38,9 @@ public:
 	/// </summary>
 	void Draw(ViewProjection viewProjection_);
 
+	//ƒ[ƒ‹ƒhÀ•Wæ“¾
+	Vector3 GetWorldPos();
+
 private:
 	//•Ï”
 	Input* input_ = nullptr;

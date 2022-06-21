@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "player.h"
 
 void Enemy::Initialize(Model* model) {
 	//NULLポインタチェック
@@ -53,6 +54,16 @@ void Enemy::Draw(ViewProjection viewProjection_) {
 	}
 }
 
+Vector3 Enemy::GetWorldPos() {
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}
+
 void Enemy::Move() {
 	const float kEnemySpeed = 0.2f;
 
@@ -83,8 +94,24 @@ void Enemy::Leave() {
 void Enemy::Fire() {
 	if (isSpawn_) {
 		//弾の速度
-		const float kBulletSpeed = 1.0f;
-		Vector3 velocity(0, 0, -kBulletSpeed);
+		const float kBulletSpeed = 0.5f;
+		//Vector3 velocity(0, 0, -kBulletSpeed);
+
+		//自キャラのワールド座標取得
+		Vector3 playerVec = player_->GetWorldPos();
+
+		//敵キャラのワールド座標を取得
+		Vector3 enemyVec =  GetWorldPos();
+
+		//敵キャラと自キャラの差分ベクトルを求める
+		Vector3 velocity = { playerVec.x - enemyVec.x, playerVec.y - enemyVec.y, playerVec.z - enemyVec.z };
+
+		//ベクトルを正規化
+		velocity = velocity.Normalize();
+
+		//ベクトルの長さを、速さに合わせる
+		velocity *= kBulletSpeed;
+
 
 		//速度ベクトルを自機の向きに合わせる
 		velocity = MathUtility::Vector3TransformNormal(velocity, worldTransform_.matWorld_);
