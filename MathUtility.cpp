@@ -73,3 +73,12 @@ Vector3 Vector3TransformNormal(const Vector3& v, const Matrix4& m) {
 
 	return vec;
 }
+
+
+float MathUtility::Distance(Vector3 posA, Vector3 posB) {
+	Vector3 d;
+	d.x = (posB.x - posA.x) * (posB.x - posA.x);
+	d.y = (posB.y - posA.y) * (posB.y - posA.y);
+	d.z = (posB.z - posA.z) * (posB.z - posA.z);
+	return d.x + d.y + d.z;
+}

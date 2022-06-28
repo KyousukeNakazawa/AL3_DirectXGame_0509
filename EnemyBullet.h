@@ -32,6 +32,12 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
+	//衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	//ワールド座標取得
+	Vector3 GetWorldPos();
+
 private:
 	//メンバ変数
 	//ワールド変換データ

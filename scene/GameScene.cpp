@@ -93,6 +93,7 @@ void GameScene::Update() {
 	if (enemy_) {
 		enemy_->Update();
 	}
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -151,4 +152,66 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckAllCollisions() {
+	//判定対象の座標
+	Vector3 posA, posB;
+
+	//自弾リスト取得
+	const std::list<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
+	const std::list<std::unique_ptr<EnemyBullet>>& enemyBullets = enemy_->GetBullets();
+
+	//自キャラと敵弾の当たり判定
+	//自キャラの座標
+	posA = player_->GetWorldPos();
+
+	//当たり判定
+	for (const std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
+		//敵弾の座標
+		posB = bullet->GetWorldPos();
+		//距離を求める
+		float d = MathUtility::Distance(posA, posB);
+		float r = (1 + 1) * (1 + 1);
+		if (d <= r) {
+			player_->OnCollision();
+
+			bullet->OnCollision();
+		}
+	}
+
+	//自弾と敵キャラの当たり判定
+	posA = enemy_->GetWorldPos();
+
+	//当たり判定
+	for (const std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		//敵弾の座標
+		posB = bullet->GetWorldPos();
+		//距離を求める
+		float d = MathUtility::Distance(posA, posB);
+		float r = (1 + 1) * (1 + 1);
+		if (d <= r) {
+			enemy_->OnCollision();
+
+			bullet->OnCollision();
+		}
+	}
+
+	//自弾と敵弾の当たり判定
+	//当たり判定
+	for (const std::unique_ptr<PlayerBullet>& bulletP : playerBullets) {
+		posA = bulletP->GetWorldPos();
+		for (const std::unique_ptr<EnemyBullet>& bulletE : enemyBullets) {
+			//敵弾の座標
+			posB = bulletE->GetWorldPos();
+			//距離を求める
+			float d = MathUtility::Distance(posA, posB);
+			float r = (1 + 1) * (1 + 1);
+			if (d <= r) {
+				bulletP->OnCollision();
+
+				bulletE->OnCollision();
+			}
+		}
+	}
 }

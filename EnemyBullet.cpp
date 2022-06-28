@@ -32,3 +32,17 @@ void EnemyBullet::Update() {
 void EnemyBullet::Draw(ViewProjection viewProjection_) {
 	model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 }
+
+void EnemyBullet::OnCollision() {
+	isDead_ = true;
+}
+
+Vector3 EnemyBullet::GetWorldPos() {
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}

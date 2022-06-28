@@ -63,4 +63,6 @@ namespace MathUtility {
 	Matrix4 operator*(const Matrix4& m1, const Matrix4& m2);
 	Vector3 operator*(const Vector3& v, const Matrix4& m);
 
+	//距離を求める
+	float Distance(Vector3 posA, Vector3 posB);
 } // namespace MathUtility

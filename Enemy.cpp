@@ -26,8 +26,7 @@ void Enemy::Initialize(Model* model) {
 
 void Enemy::Update() {
 	//íeÇÃçÌèú
-	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {
-		return bullet->IsDead(); });
+	bullets_.remove_if([](std::unique_ptr<EnemyBullet>& bullet) {return bullet->IsDead(); });
 
 	worldTransform_.UpdateMatrix();
 
@@ -136,3 +135,7 @@ void (Enemy::* Enemy::spMoveTable[])() = {
 	&Enemy::Approach,
 	&Enemy::Leave
 };
+
+void Enemy::OnCollision() {
+
+}
