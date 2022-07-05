@@ -15,6 +15,7 @@
 #include "Enemy.h"
 #include <memory>
 #include <list>
+#include "Sky.h"
 
 
 /// <summary>
@@ -74,12 +75,15 @@ private: // メンバ変数
 
 	// 3Dモデル
 	Model* model_ = nullptr;
+	Model* skymodel_ = nullptr;
+
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
+	bool isDebugCameraActive_ = false;
 
 	Vector3 start = { -15, 0, -25 };
 	Vector3 end = { 35, 0, 25 };
@@ -93,11 +97,14 @@ private: // メンバ変数
 	//敵キャラ
 	std::unique_ptr<Enemy> enemy_;
 
+	std::unique_ptr<Sky> sky_;
+
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
 
 	///衝突判定と応答
 	void CheckAllCollisions();
+
 
 };

@@ -11,6 +11,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete skymodel_;
 	delete debugCamera_;
 }
 
@@ -35,6 +36,7 @@ void GameScene::Initialize() {
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
+	skymodel_ = Model::CreateFromOBJ("kamata", true);
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -78,12 +80,28 @@ void GameScene::Initialize() {
 	newEnemy->Initialize(model_);
 	enemy_.reset(newEnemy);
 
+	Sky* newSky = new Sky();
+	newSky->Initialize(skymodel_);
+	sky_.reset(newSky);
+
 	//敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_.get());
 }
 
 void GameScene::Update() {
-	//デバッグカメラの更新
+	//#ifdef _DEBUG
+	//	if (input_->TriggerKey(DIK_P)) {
+	//		isDebugCameraActive_ = true;
+	//	}
+	//#endif
+	//
+	//	if (isDebugCameraActive_) {
+	//		//デバッグカメラの更新
+	//		debugCamera_->Update();
+	//		viewProjection_.matView = debugCamera_->GetViewProjection();
+	//		viewProjection_.matProjection = debugCamera_.m
+	//	}
+		//デバッグカメラの更新
 	debugCamera_->Update();
 
 	//自キャラの更新
@@ -123,12 +141,14 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
+	sky_->Draw(debugCamera_->GetViewProjection());
+
 	//3Dモデル描画
 	if (enemy_) {
-		enemy_->Draw(viewProjection_);
+		enemy_->Draw(debugCamera_->GetViewProjection());
 	}
 
-	player_->Draw(viewProjection_);
+	player_->Draw(debugCamera_->GetViewProjection());
 
 	//PrimitiveDrawer::GetInstance()->DrawLine3d(start, end, color);
 
